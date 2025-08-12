@@ -9,7 +9,7 @@ Built with **React, Node.js, Express, Socket.IO, MongoDB, and JWT authentication
 
 - **Instant Messaging** – Real-time chat between users with event-driven WebSocket connections.
 
-- **Secure Authentication** – User login/signup with JWT-based authentication achieving login times under **300ms**.
+- **Secure Authentication** – User login/signup with JWT-based authentication.
 
 - **Persistent Chat History** – Efficient storage and retrieval of user messages and sessions using MongoDB.
 
