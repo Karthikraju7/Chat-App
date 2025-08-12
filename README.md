@@ -32,8 +32,8 @@ Built with **React, Node.js, Express, Socket.IO, MongoDB, and JWT authentication
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/chat-app.git
-   cd chat-app
+   git clone https://github.com/Karthikraju7/Chat-App.git
+   cd Chat-App
 
 2. **Backend Setup**
 
