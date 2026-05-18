@@ -1,11 +1,11 @@
-# 💬 Real-Time Chat Application
+# Real-Time Chat Application
 
 A **full-stack real-time chat app** enabling instant messaging between users with secure authentication and high-performance message delivery.  
 Built with **React, Node.js, Express, Socket.IO, MongoDB, and JWT authentication**.
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Instant Messaging** – Real-time chat between users with event-driven WebSocket connections.
 
@@ -17,7 +17,7 @@ Built with **React, Node.js, Express, Socket.IO, MongoDB, and JWT authentication
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:** React  
 **Backend:** Node.js + Express  
@@ -27,7 +27,7 @@ Built with **React, Node.js, Express, Socket.IO, MongoDB, and JWT authentication
 
 ---
 
-## 📦 Installation
+## Installation
 
 1. **Clone the repository**
 
