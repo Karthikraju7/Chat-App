@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const {data} = await axios.post(`/api/auth/${state}`,credentials);
             if(data.success){
-                setAuthUser(data.userData);
+                setAuthUser(data.userData);io
                 connectSocket(data.userData);
                 axios.defaults.headers.common["token"] = data.token;
                 setToken(data.token);
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         setOnlineUsers([]);
         axios.defaults.headers.common["token"] = null;
         toast.success("Logout Successful")
-        socket.disconnect();
+        socket?.disconnect();
     }
 
     //  const updateProfile = async () => {

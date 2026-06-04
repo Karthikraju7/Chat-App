@@ -6,7 +6,15 @@ export const getUsers = async(req , res) => {
     try {
         const userId = req.user._id;
         const otherUsers = await User.find({_id: {$ne: userId}}).select("-password");
-        res.json({success:true , users: otherUsers})
+        const unseenMessages = await Message.aggregate([
+            { $match: { receiverId: userId, seen: false } },
+            { $group: { _id: "$senderId", count: { $sum: 1 } } }
+        ]);
+        const unseenCount = {};
+        unseenMessages.forEach(({ _id, count }) => {
+            unseenCount[_id.toString()] = count;
+        });
+        res.json({success:true , users: otherUsers, unseenMessages: unseenCount})
     } catch (error) {
         console.log(error.message);
         res.json({success: false,message: error.message})
@@ -70,5 +78,20 @@ export const sendMessage =  async(req,res) => {
     } catch (error) {
         console.log(error.message);
         res.json({success: false,message: error.message})
+    }
+}
+
+export const deleteMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+        const message = await Message.findById(id);
+        if (!message) return res.json({ success: false, message: "Message not found" });
+        if (message.senderId.toString() !== userId.toString())
+            return res.json({ success: false, message: "Unauthorized" });
+        await Message.findByIdAndDelete(id);
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
     }
 }

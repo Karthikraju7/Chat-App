@@ -11,6 +11,7 @@ export const ChatProvider = ({children}) => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null)
     const [unseenMessages, setUnseenMessages] = useState({})
+    const [userOrder, setUserOrder] = useState([]);
 
     const {socket, axios} = useContext(AuthContext);
 
@@ -51,39 +52,59 @@ export const ChatProvider = ({children}) => {
         }
     }
 
-    const subscribeToMessages = async ()=> {
-        if(!socket){
-            return;
-        }
-        socket.on("newMessage", (newMessage) => {
-            if(selectedUser && newMessage.senderId === selectedUser._id ){
-                newMessage.seen = true
-                setMessages((prevMessages) => [...prevMessages, newMessage])
+    const subscribeToMessages = () => {
+        if (!socket) return;
+        const handleNewMessage = (newMessage) => {
+            if (selectedUser && newMessage.senderId === selectedUser._id) {
+                newMessage.seen = true;
+                setMessages((prev) => [...prev, newMessage]);
                 axios.put(`/api/messages/mark/${newMessage._id}`);
-            }else{
-                setUnseenMessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages ,[newMessage.senderId] :
-                    prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages[newMessage.senderId] + 1 : 1
-                }))
+            } else {
+                setUnseenMessages((prev) => ({
+                    ...prev,
+                    [newMessage.senderId]: prev[newMessage.senderId] ? prev[newMessage.senderId] + 1 : 1
+                }));
+                reorderUser(newMessage.senderId);
             }
-        })
+        };
+        socket.on("newMessage", handleNewMessage);
+        return () => socket.off("newMessage", handleNewMessage);
+    };
+
+    const reorderUser = (senderId) => {
+        setUsers(prev => {
+            const idx = prev.findIndex(u => u._id === senderId);
+            if (idx <= 0) return prev;
+            const updated = [...prev];
+            const [user] = updated.splice(idx, 1);
+            return [user, ...updated];
+        });
+    };
+
+    const deleteMessage = async (messageId) => {
+        try {
+            const { data } = await axios.delete(`/api/messages/${messageId}`);
+            if (data.success) {
+                setMessages(prev => prev.filter(m => m._id !== messageId));
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     const unsubscribeToMessages = async ()=> {
         if(socket) socket.off("newMessage");
     }
 
-    useEffect(()=>{
-        subscribeToMessages();
-        return ()=>{
-            unsubscribeToMessages();
-        }
-    },[socket,selectedUser])
+    useEffect(() => {
+        const unsub = subscribeToMessages();
+        return () => { if (unsub) unsub(); };
+    }, [socket, selectedUser]);
 
     
     const value = {
         messages, users, selectedUser, getUsers, getMessages, sendMessage, setSelectedUser,
-        unseenMessages, setUnseenMessages
+        unseenMessages, setUnseenMessages, deleteMessage
     }
 
     return(
